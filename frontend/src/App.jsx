@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
+const API_URL = "https://YOUR-RENDER-LINK.onrender.com";
+
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [books, setBooks] = useState([]);
-const[search, setSearch] = useState("");
+  const[search, setSearch] = useState("");
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -28,7 +30,7 @@ const[search, setSearch] = useState("");
   }, []);
 
   function getBooks() {
-    axios.get("http://127.0.0.1:5000/books")
+    axios.get(`${API_URL}/books`)
       .then((response) => {
         setBooks(response.data);
       })
@@ -55,8 +57,8 @@ const[search, setSearch] = useState("");
     e.preventDefault();
 
     const url = isLogin
-      ? "http://127.0.0.1:5000/login"
-      : "http://127.0.0.1:5000/signup";
+      ? `${API_URL}/login`
+      : `${API_URL}/signup`;    
 
     axios.post(url, form)
       .then((response) => {
@@ -75,7 +77,7 @@ const[search, setSearch] = useState("");
   function addBook(e) {
     e.preventDefault();
 
-    axios.post("http://127.0.0.1:5000/books", {
+    axios.post(`${API_URL}/books`, {
       ...bookForm,
       seller_id: user.id,
     })
@@ -97,7 +99,7 @@ const[search, setSearch] = useState("");
   }
 
   function deleteBook(id) {
-  axios.delete(`http://127.0.0.1:5000/books/${id}`)
+  axios.delete(`${API_URL}/books/${id}`)
     .then(() => {
       getBooks();
     })
@@ -107,7 +109,7 @@ const[search, setSearch] = useState("");
 }
 
 function markSold(id) {
-  axios.put(`http://127.0.0.1:5000/books/${id}/sold`)
+  axios.put(`${API_URL}/books/${id}/sold`)
     .then((response) => {
       setMessage(response.data.message);
       getBooks();
