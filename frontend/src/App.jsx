@@ -9,7 +9,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
   const [books, setBooks] = useState([]);
-  const[search, setSearch] = useState("");
+  const [search, setSearch] = useState("");
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -58,7 +58,7 @@ function App() {
 
     const url = isLogin
       ? `${API_URL}/login`
-      : `${API_URL}/signup`;    
+      : `${API_URL}/signup`;
 
     axios.post(url, form)
       .then((response) => {
@@ -99,50 +99,50 @@ function App() {
   }
 
   function deleteBook(id) {
-  axios.delete(`${API_URL}/books/${id}`)
-    .then(() => {
-      getBooks();
-    })
-    .catch(() => {
-      setMessage("Could not delete book");
-    });
-}
+    axios.delete(`${API_URL}/books/${id}`)
+      .then(() => {
+        getBooks();
+      })
+      .catch(() => {
+        setMessage("Could not delete book");
+      });
+  }
 
-function markSold(id) {
-  axios.put(`${API_URL}/books/${id}/sold`)
-    .then((response) => {
-      setMessage(response.data.message);
-      getBooks();
-    })
-    .catch((error) => {
-      console.log("Status:", error.response?.status);
-      console.log("Backend error:", error.response?.data);
-      setMessage(error.response?.data?.error || "Could not mark as sold");
-    });
-}
+  function markSold(id) {
+    axios.put(`${API_URL}/books/${id}/sold`)
+      .then((response) => {
+        setMessage(response.data.message);
+        getBooks();
+      })
+      .catch((error) => {
+        console.log("Status:", error.response?.status);
+        console.log("Backend error:", error.response?.data);
+        setMessage(error.response?.data?.error || "Could not mark as sold");
+      });
+  }
 
-function contactSeller(bookId, bookTitle) {
-  axios.get(`${API_URL}/books/${bookId}/contact`, {
-    params: { requester_id: user.id },
-  })
-    .then((response) => {
-      const { seller_email } = response.data;
-      window.location.href = `mailto:${seller_email}?subject=Interested in "${bookTitle}"&body=Hi, I saw your listing for "${bookTitle}" on Bobcat Book Exchange and I'm interested!`;
+  function contactSeller(bookId, bookTitle) {
+    axios.get(`${API_URL}/books/${bookId}/contact`, {
+      params: { requester_id: user.id },
     })
-    .catch((error) => {
-      setMessage(error.response?.data?.error || "Could not get seller contact info");
-    });
-}
+      .then((response) => {
+        const { seller_email } = response.data;
+        window.location.href = `mailto:${seller_email}?subject=Interested in "${bookTitle}"&body=Hi, I saw your listing for "${bookTitle}" on Bobcat Book Exchange and I'm interested!`;
+      })
+      .catch((error) => {
+        setMessage(error.response?.data?.error || "Could not get seller contact info");
+      });
+  }
 
   if (!user) {
     return (
       <div>
-      
-           <h1>Bobcat Book Exchange📚</h1>
-   
-        
-        
-        
+
+        <h1>Bobcat Book Exchange📚</h1>
+
+
+
+
         <h2>{isLogin ? "Login" : "Sign Up"}</h2>
 
         <form onSubmit={handleSubmit}>
@@ -185,10 +185,10 @@ function contactSeller(bookId, bookTitle) {
         <button type="submit">Add Book</button>
       </form>
 
-      
 
-      
-      
+
+
+
       <h2>Books for Sale</h2>
 
       <input
@@ -199,44 +199,44 @@ function contactSeller(bookId, bookTitle) {
       />
 
       {books
-      .filter((book) =>
-        (book.title || "") .toLowerCase().includes(search.toLowerCase()) ||
-        (book.course || "").toLowerCase().includes(search.toLowerCase())
-      )
-      .map((book) => (
-        <div className="book-card" key={book.id}>
-          <h3>{book.title} 📕</h3>
-          <p>Author: {book.author}</p>
-          <p>Course: {book.course}</p>
-          <p>Price: ${book.price}</p>
-          <p>Condition: {book.condition}</p>
-          <p>{book.description}</p>
-        {user.id === book.seller_id && (
-          <button    
-          className="delete-button"
-          onClick={() => deleteBook(book.id)} >
-            Delete 
-          </button>
-          
-          )}
-          <p className={book.sold ? "sold" : "available"}>
-          Status: {book.sold ? "🔴 Sold" : "🟢 Available"}
-          </p>
+        .filter((book) =>
+          (book.title || "").toLowerCase().includes(search.toLowerCase()) ||
+          (book.course || "").toLowerCase().includes(search.toLowerCase())
+        )
+        .map((book) => (
+          <div className="book-card" key={book.id}>
+            <h3>{book.title} 📕</h3>
+            <p>Author: {book.author}</p>
+            <p>Course: {book.course}</p>
+            <p>Price: ${book.price}</p>
+            <p>Condition: {book.condition}</p>
+            <p>{book.description}</p>
+            {user.id === book.seller_id && (
+              <button
+                className="delete-button"
+                onClick={() => deleteBook(book.id)} >
+                Delete
+              </button>
 
-          {user.id === book.seller_id && !book.sold && (
-          <button 
-          className="mark-sold-button"
-          onClick={() => markSold(book.id)}>
-             Mark as Sold
-          </button>
-          )}
-          {user.id !== book.seller_id && !book.sold && (
-                  <button className="contact-button" onClick={() => contactSeller(book.id, book.title)}>
-                    Contact Seller
-                  </button>
-                )}
+            )}
+            <p className={book.sold ? "sold" : "available"}>
+              Status: {book.sold ? "🔴 Sold" : "🟢 Available"}
+            </p>
+
+            {user.id === book.seller_id && !book.sold && (
+              <button
+                className="mark-sold-button"
+                onClick={() => markSold(book.id)}>
+                Mark as Sold
+              </button>
+            )}
+            {user.id !== book.seller_id && !book.sold && (
+              <button className="contact-button" onClick={() => contactSeller(book.id, book.title)}>
+                Contact Seller
+              </button>
+            )}
           </div>
-      ))}
+        ))}
 
       <p>{message}</p>
     </div>
