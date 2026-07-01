@@ -63,11 +63,11 @@ def login():
          }
         })
 
-@app.route("/books", methods = ["GET"])
+@app.route("/books", methods=["GET"])
 def get_books():
-    books = Book.query.all()
+    results = db.session.query(Book, User).join(User, Book.seller_id == User.id).all()
     book_list = []
-    for book in books:
+    for book, seller in results:
         book_list.append({
             "id": book.id,
             "title": book.title,
@@ -75,12 +75,35 @@ def get_books():
             "price": book.price,
             "course": book.course,
             "condition": book.condition,
-            "description":book.description,
+            "description": book.description,
             "sold": book.sold,
-            "seller_id": book.seller_id
+            "seller_id": book.seller_id,
+            "seller_username": seller.username
+            # no email here anymore
         })
-    
     return jsonify(book_list)
+
+
+@app.route("/books/<int:id>/contact", methods=["GET"])
+def get_seller_contact(id):
+    requester_id = request.args.get("requester_id")
+
+    if not requester_id:
+        return jsonify({"error": "Must be logged in to view contact info"}), 401
+
+    book = Book.query.get(id)
+    if not book:
+        return jsonify({"error": "Book not found"}), 404
+
+    seller = User.query.get(book.seller_id)
+    if not seller:
+        return jsonify({"error": "Seller not found"}), 404
+
+    return jsonify({
+        "seller_username": seller.username,
+        "seller_email": seller.email
+    })
+    
 @app.route("/books", methods=["POST"])
 def add_book():
     data = request.get_json()

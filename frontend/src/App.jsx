@@ -121,6 +121,19 @@ function markSold(id) {
     });
 }
 
+function contactSeller(bookId, bookTitle) {
+  axios.get(`${API_URL}/books/${bookId}/contact`, {
+    params: { requester_id: user.id },
+  })
+    .then((response) => {
+      const { seller_email } = response.data;
+      window.location.href = `mailto:${seller_email}?subject=Interested in "${bookTitle}"&body=Hi, I saw your listing for "${bookTitle}" on Bobcat Book Exchange and I'm interested!`;
+    })
+    .catch((error) => {
+      setMessage(error.response?.data?.error || "Could not get seller contact info");
+    });
+}
+
   if (!user) {
     return (
       <div>
@@ -216,7 +229,12 @@ function markSold(id) {
           onClick={() => markSold(book.id)}>
              Mark as Sold
           </button>
-)}
+          )}
+          {user.id !== book.seller_id && !book.sold && (
+                  <button className="contact-button" onClick={() => contactSeller(book.id, book.title)}>
+                    Contact Seller
+                  </button>
+                )}
           </div>
       ))}
 
