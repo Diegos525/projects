@@ -36,10 +36,10 @@ input {
   display: block;
   width: 90%;
   padding: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
+  background-color: #000000;
+  border:none;
   margin: 10px auto;
- 
+  color: #fff;
 }
 
 button {
